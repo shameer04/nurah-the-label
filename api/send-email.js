@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     // --- CONTACT FORM ---
     if (type === "contact") {
       await resend.emails.send({
-        from: "Nurah <onboarding@resend.dev>",
+        from: "Nurah <orders@send.shopnurah.com>",
         to: ["shop.nurah@outlook.com"],
         subject: "New Contact Message",
         html: `<h2>New Message</h2><p><strong>From:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p>${message}</p>`
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
     if (type === "order") {
       // 1. Send to YOU (Admin)
       await resend.emails.send({
-        from: "Nurah Orders <onboarding@resend.dev>",
+        from: "Nurah <orders@send.shopnurah.com>",
         to: ["shop.nurah@outlook.com"],
         subject: `New Order #${orderID}`,
         html: `
@@ -43,7 +43,7 @@ export default async function handler(req, res) {
 
       // 2. Send to CUSTOMER
       await resend.emails.send({
-        from: "Nurah <onboarding@resend.dev>",
+        from: "Nurah <orders@send.shopnurah.com>",
         to: [email],
         subject: `Order Confirmed: #${orderID}`,
         html: `
