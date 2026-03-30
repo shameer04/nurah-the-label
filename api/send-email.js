@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 // --- CONTACT FORM ---
 if (type === "contact") {
   await resend.emails.send({
-    from: "Nurah Support <support@shopnurah.com>", // Updated domain
+    from: "Nurah <support@shopnurah.com>", // Updated domain
     to: ["shop.nurah@outlook.com"],
     reply_to: email, // This uses the customer's email from the form
     subject: "New Contact Message",
