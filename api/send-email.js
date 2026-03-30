@@ -11,15 +11,16 @@ export default async function handler(req, res) {
     // We pull all these from the 'body' of your fetch request in script.js
     const { type, name, email, message, items, total, orderID, address, phone, payment } = req.body;
 
-    // --- CONTACT FORM ---
-    if (type === "contact") {
-      await resend.emails.send({
-        from: "Nurah <orders@shopnurah.com>",
-        to: ["shop.nurah@outlook.com"],
-        subject: "New Contact Message",
-        html: `<h2>New Message</h2><p><strong>From:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p>${message}</p>`
-      });
-    }
+// --- CONTACT FORM ---
+if (type === "contact") {
+  await resend.emails.send({
+    from: "Nurah Support <support@shopnurah.com>", // Updated domain
+    to: ["shop.nurah@outlook.com"],
+    reply_to: email, // This uses the customer's email from the form
+    subject: "New Contact Message",
+    html: `<h2>New Message</h2><p><strong>From:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p>${message}</p>`
+  });
+}
 
     // --- ORDER CONFIRMATIONS ---
     if (type === "order") {
