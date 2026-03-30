@@ -362,18 +362,18 @@
           <p class="product-card__cat">${p.category}</p>
           <p class="product-card__name">${p.name}</p>
           <p class="product-card__desc">${p.description}</p>
-          <p class="product-card__stock ${p.in_stock !== false ? 'in-stock' : 'out-of-stock'}">
-            ${p.in_stock !== false ? 'In Stock' : 'Out of Stock'}
+          <p class="product-card__stock ${p.inventory > 0 ? 'in-stock' : 'out-of-stock'}">
+            ${p.inventory > 0 ? 'In Stock' : 'Out of Stock'}
           </p>
           <div class="product-card__footer">
             <span class="product-card__price">PKR ${p.price.toLocaleString()}</span>
-            ${p.in_stock !== false 
+            ${p.inventory > 0 
               ? `<button class="btn-add"
                   data-id="${p.id}"
                   data-name="${p.name}"
                   data-price="${p.price}"
                   data-image="${p.image_url || ''}"
-                  data-instock="${p.in_stock}">Add to Bag</button>`
+                  data-instock="true">Add to Bag</button>`
               : `<a href="product-p10.html?slug=${p.slug}" class="btn-add" style="text-align: center; text-decoration: none;">Read More</a>`
             }
           </div>
