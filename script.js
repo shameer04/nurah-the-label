@@ -371,6 +371,17 @@ await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
         })
       });
 
+      // Automatically deduct purchased quantities from the inventory
+      await Promise.all(cart.map(i => fetch(`${SUPABASE_URL}/rest/v1/rpc/decrement_stock`, {
+        method: 'POST',
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ p_id: i.id, p_qty: i.qty })
+      })));
+
       cart = []; saveCart(cart); refreshCartUI();
       form.reset();
       const bankDetails = $('#bankDetails');
