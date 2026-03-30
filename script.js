@@ -19,10 +19,6 @@ const SHIPPING = 250; // flat rate PKR
 const SUPABASE_URL = 'https://kayqugamgeyxeoxwrpaz.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_RtI0lmy6sHjuZIVO5i2zDQ_S_1tOQIl';
 
-// EmailJS Initialization
-if (typeof emailjs !== 'undefined') {
-  emailjs.init({ publicKey: "U7B2sWwrK6T5LszdU" });
-}
 
 /* ── Loader ────────────────────────────────────────────────── */
 (function () {
@@ -312,7 +308,16 @@ refreshCartUI();
 
     const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
     const grandTotal = subtotal + SHIPPING;
-    const itemLines = cart.map(i => `${i.name} x${i.qty} = ${pkr(i.price * i.qty)}`).join('<br/>');
+    const itemsHTML = cart.map(i => `
+  <div style="display:flex; align-items:center; margin-bottom:12px;">
+    <img src="${i.image}" style="width:60px; height:60px; object-fit:cover; border-radius:6px; margin-right:10px;" />
+    <div>
+      <p style="margin:0;"><strong>${i.name}</strong></p>
+      <p style="margin:0; font-size:12px;">Qty: ${i.qty}</p>
+      <p style="margin:0; font-size:12px;">${pkr(i.price * i.qty)}</p>
+    </div>
+  </div>
+`).join('');
     const payLabel = payment === 'bank' ? 'Bank Transfer (Meezan Bank)' : 'Cash on Delivery';
 
     const btn = form.querySelector('[type="submit"]');
@@ -322,7 +327,26 @@ refreshCartUI();
     try {
       const orderID = Date.now().toString().slice(-4);
 
-      await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
+      // Send professional order email
+await fetch("/api/send-email", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    type: "order",
+    name,
+    email,
+    items: itemsHTML,
+    total: grandTotal,
+    orderID,
+    address,
+    phone,
+    payment: payLabel
+  })
+});
+
+await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
         method: 'POST',
         headers: {
           apikey: SUPABASE_KEY,
@@ -336,7 +360,8 @@ refreshCartUI();
           customer_email: email,
           customer_phone: phone,
           address,
-          items: itemLines,
+          // CHANGE THIS LINE BELOW:
+          items: cart.map(i => `${i.name} (x${i.qty})`).join(', '), 
           subtotal,
           total: grandTotal,
           payment_method: payLabel,
@@ -345,27 +370,6 @@ refreshCartUI();
           created_at: new Date().toISOString()
         })
       });
-
-// Send to EmailJS
-      if (typeof emailjs !== 'undefined') {
-        try {
-          await emailjs.send("service_l9zxvp8", "template_q9j03a1", {
-            order_number:   orderID, // 2. Add this line here
-            customer_name:  name,
-            customer_email: email || 'N/A',
-            customer_phone: phone,
-            address:        address,
-            payment:        payLabel,
-            items:          itemLines.replace(/<br\/>/g, '\n'),
-            subtotal:       pkr(subtotal),
-            shipping:       pkr(SHIPPING),
-            total:          pkr(grandTotal),
-            notes:          notes || 'None'
-          });
-        } catch (emailErr) {
-          console.error("EmailJS Order Error:", emailErr);
-        }
-      }
 
       cart = []; saveCart(cart); refreshCartUI();
       form.reset();
@@ -456,19 +460,18 @@ refreshCartUI();
         })
       });
 
-      // Send to EmailJS
-      if (typeof emailjs !== 'undefined') {
-        try {
-        await emailjs.send("service_l9zxvp8", "template_wla1ff1", {
-          from_name:  $('#cName').value.trim(),
-          from_email: $('#cEmail').value.trim(),
-          phone:      $('#cPhone')?.value.trim() || 'N/A',
-          message:    $('#cMsg').value.trim()
-        });
-        } catch (emailErr) {
-          console.error("EmailJS Contact Error:", emailErr);
-        }
-      }
+      await fetch("/api/send-email", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    type: "contact",
+    name: $('#cName').value.trim(),
+    email: $('#cEmail').value.trim(),
+    message: $('#cMsg').value.trim()
+  })
+});
 
       form.reset();
       submitBtn.textContent = 'Send Message';
