@@ -222,7 +222,7 @@
 
     // Stock status
     const stockEl = document.querySelector('.pdp__stock')
-    if (p.in_stock) {
+    if (p.inventory > 0) {
       stockEl.textContent = '✓ In Stock'
       stockEl.className = 'pdp__stock pdp__stock--in'
     } else {
@@ -274,9 +274,9 @@
     btn.dataset.id = p.id
     btn.dataset.name = p.name
     btn.dataset.price = p.price
-    btn.dataset.instock = p.in_stock
+    btn.dataset.instock = p.inventory > 0
     btn.dataset.image = p.image_url || ''
-    if (!p.in_stock) btn.disabled = true
+    if (p.inventory <= 0) btn.disabled = true
 
     // SKU and category
     document.querySelector('.pdp__meta').innerHTML =
