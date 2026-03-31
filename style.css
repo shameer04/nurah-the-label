@@ -644,9 +644,9 @@ section { padding: 100px 48px; }
 .contact__form-sub { font-size: 0.82rem; color: var(--mid-gray); margin-bottom: 32px; line-height: 1.7; }
 .form-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
 .form-field label { font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mid-gray); }
-.form-field input, .form-field textarea { padding: 12px 16px; border: 1px solid rgba(10,10,10,0.15); background: var(--off-white); font-family: var(--font-sans); font-size: 0.85rem; transition: border-color 0.3s; outline: none; resize: none; color: var(--black); }
-.form-field input:focus, .form-field textarea:focus { border-color: var(--black); }
-.form-field.error input, .form-field.error textarea { border-color: #c0392b; animation: shake 0.4s var(--ease); }
+.form-field input, .form-field textarea, .form-field select { padding: 12px 16px; border: 1px solid rgba(10,10,10,0.15); background: var(--off-white); font-family: var(--font-sans); font-size: 0.85rem; transition: border-color 0.3s; outline: none; resize: none; color: var(--black); }
+.form-field input:focus, .form-field textarea:focus, .form-field select:focus { border-color: var(--black); }
+.form-field.error input, .form-field.error textarea, .form-field.error select { border-color: #c0392b; animation: shake 0.4s var(--ease); }
 .field-error { font-size: 0.68rem; color: #c0392b; min-height: 16px; }
 .form-success { font-size: 0.85rem; color: #5a8a5e; margin-top: 14px; font-style: italic; }
 @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
