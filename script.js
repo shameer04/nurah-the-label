@@ -288,6 +288,21 @@ refreshCartUI();
 (function () {
   const form = $('#checkoutForm');
   if (!form) return;
+
+  const citySelect = $('#coCity');
+  const cityOtherWrap = $('#coCityOtherWrap');
+  if (citySelect && cityOtherWrap) {
+    citySelect.addEventListener('change', () => {
+      if (citySelect.value === 'Other') {
+        cityOtherWrap.style.display = 'flex';
+      } else {
+        cityOtherWrap.style.display = 'none';
+        const coCityOther = $('#coCityOther');
+        if (coCityOther) coCityOther.value = '';
+      }
+    });
+  }
+
   form.addEventListener('submit', async e => {
     e.preventDefault();
     if (!cart.length) { alert('Your bag is empty!'); return; }
@@ -296,6 +311,8 @@ refreshCartUI();
     const email = $('#coEmail')?.value.trim() || '';
     const phone = $('#coPhone')?.value.trim() || '';
     const address = $('#coAddress')?.value.trim() || '';
+    const citySelectVal = $('#coCity')?.value || '';
+    const city = citySelectVal === 'Other' ? ($('#coCityOther')?.value.trim() || '') : citySelectVal;
     const notes = $('#coNotes')?.value.trim() || '';
     const payment = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'cod';
 
@@ -304,6 +321,11 @@ refreshCartUI();
     if (!name) { ok = false; markErr('#coName'); }
     if (!phone) { ok = false; markErr('#coPhone'); }
     if (!address) { ok = false; markErr('#coAddress'); }
+    if (!city) { 
+      ok = false; 
+      if (citySelectVal === 'Other') markErr('#coCityOther');
+      else markErr('#coCity'); 
+    }
     if (!ok) return;
 
     const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
@@ -341,6 +363,7 @@ await fetch("/api/send-email", {
     total: grandTotal,
     orderID,
     address,
+    city,
     phone,
     payment: payLabel
   })
@@ -359,7 +382,7 @@ await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
           customer_name: name,
           customer_email: email,
           customer_phone: phone,
-          address,
+          address: `${address}, ${city}`,
           // CHANGE THIS LINE BELOW:
           items: cart.map(i => `${i.name} (x${i.qty})`).join(', '), 
           subtotal,
@@ -403,7 +426,7 @@ await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
         const succEmail = $('#succEmail');
         if (succEmail) succEmail.textContent = email || 'admin@shopnurah.com';
         const succAddressOut = $('#succAddressOut');
-        if (succAddressOut) succAddressOut.textContent = `${name}\n${address}\n${phone}\n${email || ''}`.trim();
+        if (succAddressOut) succAddressOut.textContent = `${name}\n${address}, ${city}\n${phone}\n${email || ''}`.trim();
         const succPayment = $('#succPayment');
         if (succPayment) succPayment.textContent = payLabel;
         modal.classList.add('active');
