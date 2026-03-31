@@ -83,7 +83,27 @@
         </div>
         <div class="form-field">
           <label for="coAddress">Shipping Address *</label>
-          <textarea id="coAddress" rows="3" placeholder="Street, house/apartment, area, city"></textarea>
+          <textarea id="coAddress" rows="3" placeholder="Street, house/apartment, area"></textarea>
+        </div>
+        <div class="form-field">
+          <label for="coCity">City *</label>
+          <select id="coCity">
+            <option value="" disabled selected>Select your city...</option>
+            <option value="Karachi">Karachi</option>
+            <option value="Lahore">Lahore</option>
+            <option value="Islamabad">Islamabad</option>
+            <option value="Rawalpindi">Rawalpindi</option>
+            <option value="Faisalabad">Faisalabad</option>
+            <option value="Multan">Multan</option>
+            <option value="Hyderabad">Hyderabad</option>
+            <option value="Peshawar">Peshawar</option>
+            <option value="Quetta">Quetta</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-field" id="coCityOtherWrap" style="display: none;">
+          <label for="coCityOther">Enter City Name *</label>
+          <input type="text" id="coCityOther" placeholder="Your city" />
         </div>
         <div class="form-field">
           <label for="coNotes">Order Notes (optional)</label>
