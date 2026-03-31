@@ -9,32 +9,35 @@ export default async function handler(req, res) {
 
   try {
     // We pull all these from the 'body' of your fetch request in script.js
-    const { type, name, email, message, items, total, orderID, address, phone, payment } = req.body;
+    const { type, name, email, message, items, total, orderID, address, city, phone, payment } = req.body;
 
-// --- CONTACT FORM ---
-if (type === "contact") {
-  await resend.emails.send({
-    from: "Nurah <support@shopnurah.com>", // Updated domain
-    to: ["shop.nurah@outlook.com"],
-    reply_to: email, // This uses the customer's email from the form
-    subject: "New Contact Message",
-    html: `<h2>New Message</h2><p><strong>From:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p>${message}</p>`
-  });
-}
+    // --- CONTACT FORM ---
+    if (type === "contact") {
+      await resend.emails.send({
+        from: "Nurah <onboarding@resend.dev>",
+        to: ["shop.nurah@outlook.com"],
+        subject: "New Contact Message",
+        html: `<h2>New Message</h2><p><strong>From:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p>${message}</p>`
+      });
+    }
 
     // --- ORDER CONFIRMATIONS ---
     if (type === "order") {
       // 1. Send to YOU (Admin)
       await resend.emails.send({
-        from: "Nurah <orders@shopnurah.com>",
+        from: "Nurah Orders <onboarding@resend.dev>",
         to: ["shop.nurah@outlook.com"],
         subject: `New Order #${orderID}`,
         html: `
           <h2>🛒 New Order Received</h2>
           <p><strong>Order ID:</strong> #${orderID}</p>
           <p><strong>Customer:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email || 'N/A'}</p>
+          <p><strong>Phone:</strong> ${phone}</p>
           <p><strong>Address:</strong> ${address}</p>
+          <p><strong>City:</strong> ${city}</p>
           <hr>
+          <h3>Products:</h3>
           ${items}
           <hr>
           <h3>Total: Rs ${total}</h3>
@@ -44,7 +47,7 @@ if (type === "contact") {
 
       // 2. Send to CUSTOMER
       await resend.emails.send({
-        from: "Nurah <orders@shopnurah.com>",
+        from: "Nurah <onboarding@resend.dev>",
         to: [email],
         subject: `Order Confirmed: #${orderID}`,
         html: `
