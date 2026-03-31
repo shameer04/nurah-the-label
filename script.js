@@ -396,17 +396,35 @@ await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
 
       // Automatically deduct purchased quantities from the inventory
       await Promise.all(cart.map(async i => {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/decrement_stock`, {
-          method: 'POST',
-          headers: {
-            apikey: SUPABASE_KEY,
-            Authorization: `Bearer ${SUPABASE_KEY}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ p_id: String(i.id), p_qty: i.qty })
-        });
-        if (!res.ok) {
-          console.error('Failed to decrement stock for', i.name, await res.text());
+        try {
+          // 1. Fetch current inventory by product name
+          const queryRes = await fetch(`${SUPABASE_URL}/rest/v1/products?select=id,inventory&name=eq.${encodeURIComponent(i.name)}`, {
+            headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+          });
+          const products = await queryRes.json();
+          
+          if (products && products.length > 0) {
+            const dbProduct = products[0];
+            const newInventory = Math.max(0, dbProduct.inventory - i.qty);
+            
+            // 2. Update with the new inventory
+            const updateRes = await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${dbProduct.id}`, {
+              method: 'PATCH',
+              headers: {
+                apikey: SUPABASE_KEY,
+                Authorization: `Bearer ${SUPABASE_KEY}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ inventory: newInventory })
+            });
+            if (!updateRes.ok) {
+              console.error('Failed to update stock for', i.name, await updateRes.text());
+            }
+          } else {
+             console.error('Product not found in database:', i.name);
+          }
+        } catch (err) {
+          console.error('Failed to decrement stock for', i.name, err);
         }
       }));
 
