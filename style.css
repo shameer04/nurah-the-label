@@ -16,6 +16,39 @@
   --font-display: 'Cormorant Garamond', serif;
   --font-sans:    'DM Sans', sans-serif;
   --ease:         cubic-bezier(0.16, 1, 0.3, 1);
+  --banner-h:     36px;
+}
+
+/* ── Promo banner ───────────────────────────────────────── */
+.promo-banner {
+  position: fixed; top: 0; left: 0; width: 100%; height: var(--banner-h);
+  background: var(--black); color: var(--off-white);
+  overflow: hidden; z-index: 900;
+  display: flex; align-items: center;
+}
+.promo-banner__track {
+  display: flex; align-items: center; white-space: nowrap;
+  animation: promoScroll 22s linear infinite;
+  will-change: transform;
+}
+.promo-banner:hover .promo-banner__track { animation-play-state: paused; }
+.promo-banner__track span {
+  padding: 0 36px;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 400;
+  color: var(--off-white);
+}
+@keyframes promoScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+body { padding-top: var(--banner-h); }
+.navbar { top: var(--banner-h) !important; }
+@media (max-width: 640px) {
+  .promo-banner__track span { padding: 0 22px; font-size: 0.6rem; }
 }
 
 /* ── Reset ──────────────────────────────────────────────── */
