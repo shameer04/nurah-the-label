@@ -181,7 +181,7 @@ function refreshCartUI() {
     if (cpt) cpt.innerHTML = `<strong>${pkr(grandTotal)}</strong>`;
   }
 
-  /* ── Checkout summary ── */
+/* ── Checkout summary ── */
   const checkoutItems = $('#checkoutItems');
   if (checkoutItems) {
     checkoutItems.innerHTML = '';
@@ -195,9 +195,18 @@ function refreshCartUI() {
         checkoutItems.appendChild(p);
       });
     }
+
+    let discountAmount = 0;
+    if (appliedDiscount) discountAmount = Math.round(subtotal * (appliedDiscount.percent / 100));
+    const finalTotal = grandTotal - discountAmount;
+
+    const discountRow = $('#discountRow'), checkoutDiscount = $('#checkoutDiscount');
+    if (discountRow) discountRow.style.display = discountAmount > 0 ? 'flex' : 'none';
+    if (checkoutDiscount) checkoutDiscount.textContent = `- ${pkr(discountAmount)}`;
+
     const cs = $('#checkoutSubtotal'), ct = $('#checkoutTotal');
     if (cs) cs.textContent = pkr(subtotal);
-    if (ct) ct.innerHTML = `<strong>${pkr(grandTotal)}</strong>`;
+    if (ct) ct.innerHTML = `<strong>${pkr(finalTotal)}</strong>`;
   }
 }
 
@@ -284,6 +293,53 @@ refreshCartUI();
   }));
 })();
 
+/* ── Discount code ─────────────────────────────────────────── */
+let appliedDiscount = null; // { code, percent }
+
+(function () {
+  const btn = $('#applyDiscountBtn');
+  if (!btn) return;
+
+  btn.addEventListener('click', async () => {
+    const input = $('#coDiscount');
+    const msg = $('#discountMsg');
+    const code = input.value.trim().toUpperCase();
+    if (!code) return;
+
+    btn.textContent = 'Checking...';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/discount_codes?code=eq.${encodeURIComponent(code)}&active=eq.true&select=*`,
+        { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } }
+      );
+      const rows = await res.json();
+
+      if (rows && rows.length) {
+        appliedDiscount = { code: rows[0].code, percent: rows[0].percent };
+        msg.style.color = '#2e7d32';
+        msg.textContent = `"${code}" applied — ${rows[0].percent}% off!`;
+        input.disabled = true;
+        btn.textContent = 'Remove';
+        btn.dataset.applied = 'true';
+      } else {
+        appliedDiscount = null;
+        msg.style.color = '#c0392b';
+        msg.textContent = 'Invalid or expired code.';
+        btn.textContent = 'Apply';
+      }
+    } catch {
+      msg.style.color = '#c0392b';
+      msg.textContent = 'Something went wrong. Try again.';
+      btn.textContent = 'Apply';
+    }
+
+    btn.disabled = false;
+    refreshCartUI();
+  });
+})();
+
 /* ── Checkout form ─────────────────────────────────────────── */
 (function () {
   const form = $('#checkoutForm');
@@ -328,8 +384,9 @@ refreshCartUI();
     }
     if (!ok) return;
 
-    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-    const grandTotal = subtotal + SHIPPING;
+const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    const discountAmount = appliedDiscount ? Math.round(subtotal * (appliedDiscount.percent / 100)) : 0;
+    const grandTotal = subtotal + SHIPPING - discountAmount;
     const itemsHTML = cart.map(i => `
   <div style="display:flex; align-items:center; margin-bottom:12px;">
     <img src="${i.image}" style="width:60px; height:60px; object-fit:cover; border-radius:6px; margin-right:10px;" />
