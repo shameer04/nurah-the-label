@@ -115,6 +115,16 @@
           <label for="coCityOther">Enter City Name *</label>
           <input type="text" id="coCityOther" placeholder="Your city" />
         </div>
+
+        <div class="form-field">
+          <label for="coDiscount">Discount Code (optional)</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="coDiscount" placeholder="Enter code" style="flex:1;" />
+            <button type="button" id="applyDiscountBtn" class="btn-ghost" style="white-space:nowrap;">Apply</button>
+          </div>
+          <span class="field-error" id="discountMsg" style="display:block;margin-top:6px;"></span>
+        </div>
+
         <div class="form-field">
           <label for="coNotes">Order Notes (optional)</label>
           <textarea id="coNotes" rows="3" placeholder="Size preferences, delivery instructions, etc."></textarea>
@@ -156,6 +166,11 @@
       <div class="checkout-summary__row" style="margin-top:14px;">
         <span>Subtotal</span>
         <span id="checkoutSubtotal">PKR 0</span>
+      </div>
+
+      <div class="checkout-summary__row" id="discountRow" style="display:none;">
+        <span>Discount</span>
+        <span id="checkoutDiscount">- PKR 0</span>
       </div>
       <div class="checkout-summary__row">
         <span>Shipping</span>
