@@ -18,6 +18,7 @@ function sanitize(str) {
 const SHIPPING = 250; // flat rate PKR
 const SUPABASE_URL = 'https://kayqugamgeyxeoxwrpaz.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_RtI0lmy6sHjuZIVO5i2zDQ_S_1tOQIl';
+let appliedDiscount = null; // { code, percent }
 
 
 /* ── Loader ────────────────────────────────────────────────── */
@@ -294,7 +295,6 @@ refreshCartUI();
 })();
 
 /* ── Discount code ─────────────────────────────────────────── */
-let appliedDiscount = null; // { code, percent }
 
 (function () {
   const btn = $('#applyDiscountBtn');
