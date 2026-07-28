@@ -473,6 +473,20 @@ section { padding: 100px 48px; }
 /* ── Hero full ──────────────────────────────────────────── */
 .hero { height: 100vh; position: relative; background: var(--black); overflow: hidden; display: flex; align-items: flex-end; }
 .hero__bg { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 80% at 60% 30%, #2a2520 0%, var(--black) 65%); }
+.hero__bg--summer {
+  background-image: url('images/herofinal2.webp');
+  background-size: cover;
+  background-position: center;
+}
+@media (max-width: 768px) {
+  .hero { height: 85vh; min-height: 600px; }
+  .hero__bg--summer {
+    background-image: url('images/heroyes.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}
 .hero__shimmer { position: absolute; inset: 0; background: radial-gradient(ellipse 40% 60% at 50% 40%, rgba(212,201,184,0.07) 0%, transparent 70%); animation: shimmer 6s ease-in-out infinite alternate; }
 @keyframes shimmer { from { opacity: 0.4; } to { opacity: 1; } }
 .hero__bg-text { position: absolute; bottom: -0.08em; left: -0.02em; font-family: var(--font-display); font-size: clamp(100px, 20vw, 260px); font-weight: 700; line-height: 1; color: transparent; -webkit-text-stroke: 1px rgba(245,242,237,0.08); letter-spacing: -0.02em; user-select: none; pointer-events: none; white-space: nowrap; }
